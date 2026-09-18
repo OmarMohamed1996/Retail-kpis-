@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل وحاسبة مؤشرات أداء التجزئة | Retail KPIs Guide & Simulator</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card-bg: rgba(17, 24, 39, 0.78);
+      --card-hover: rgba(30, 41, 59, 0.88);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(212, 175, 55, 0.4);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --dim: #6b7280;
+      --gold: #d4af37;
+      --gold-glow: rgba(212, 175, 55, 0.15);
+      --green: #34d399;
+      --blue: #38bdf8;
+      --purple: #a78bfa;
+      --coral: #fb7185;
+      --mono: 'JetBrains Mono', monospace;
+      --en: 'Plus Jakarta Sans', sans-serif;
+      --ar: 'Cairo', sans-serif;
+      --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--ar);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(212, 175, 55, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 45%);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+    .top-strip {
+      background: linear-gradient(90deg, #111827, #1e293b, #111827);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 10px;
+      border-radius: 50px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: #fef08a;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3.5rem 1.5rem 2.5rem;
+      max-width: 950px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #fff 40%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-family: var(--en);
+      color: var(--blue);
+      font-size: 1.05rem;
+      font-weight: 600;
+      direction: ltr;
+      margin-bottom: 1rem;
+    }
+    .hero-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* Pillars Overview Cards */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      padding: 0 1.25rem;
+    }
+    .pillar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      backdrop-filter: blur(8px);
+      border-top: 3px solid var(--p-color, var(--gold));
+    }
+    .pillar-card h3 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pillar-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Sticky Navbar */
+    .nav-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(11, 15, 23, 0.9);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+    }
+    .nav-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-bar::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--gold);
+      color: #0b0f17;
+      border-color: var(--gold);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 2.5rem auto 5rem;
+      padding: 0 1.25rem;
+    }
+    .sec-block {
+      margin-bottom: 4rem;
+      scroll-margin-top: 100px;
+    }
+    .sec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .sec-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .sec-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+    }
+
+    /* KPI Cards Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.2rem;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.3rem;
+      position: relative;
+      transition: var(--transition);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent-bar, var(--gold));
+      opacity: 0.6;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      background: var(--card-hover);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+    }
+    .kpi-card:hover::before { opacity: 1; }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+      direction: ltr;
+    }
+    .kpi-en {
+      font-family: var(--en);
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .kpi-abbr {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .kpi-ar {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 0.4rem;
+    }
+    .kpi-concept {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+    }
+    
+    .formula-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 3px solid var(--accent-bar, var(--gold));
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--blue);
+      direction: ltr;
+      text-align: left;
+      margin-bottom: 0.8rem;
+    }
+
+    .example-box {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.82rem;
+      color: #d1d5db;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+    .example-box strong { color: var(--gold); }
+
+    /* Interactive Simulator Table Section */
+    .calc-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.8rem;
+      margin-bottom: 3.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .calc-inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .input-field label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .input-field input {
+      background: #121824;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.55rem 0.8rem;
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .input-field input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    /* Results Table */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 0.85rem;
+    }
+    th {
+      background: #161f30;
+      color: #fff;
+      padding: 0.85rem 1rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: #e2e8f0;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .val-pill {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      direction: ltr;
+    }
+    .eval-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .eval-good { background: rgba(52, 211, 153, 0.15); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .eval-warn { background: rgba(251, 113, 133, 0.15); color: var(--coral); border: 1px solid rgba(251, 113, 133, 0.3); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      border-top: 1px solid var(--border);
+      background: #090d14;
+      font-size: 0.82rem;
+      color: var(--dim);
+    }
+    .footer-title {
+      font-family: var(--en);
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    @media(max-width: 640px) {
+      .hero { padding: 2.5rem 1rem 1.8rem; }
+      .calc-section { padding: 1.2rem; }
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Strip -->
+  <div class="top-strip">
+    <div class="top-badge">
+      <span>●</span> دليل تشغيلي تفاعلي معتمد
+    </div>
+    <div style="font-family: var(--en); font-size: 0.75rem;">
+      RETAIL STORE OPERATIONS & KPI DASHBOARD
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="hero">
+    <h1>دليل وحاسبة <span>مؤشرات أداء التجزئة</span></h1>
+    <div class="hero-sub">Retail KPIs Guide & Operational Simulator</div>
+    <p class="hero-desc">
+      لوحة القيادة الإدارية لقياس ومتابعة إنتاجية الفروع، ربحية المخزون، وتحليل سلوك الزوار لتمكين الإدارة من اتخاذ قرارات استباقية مبنية على البيانات.
+    </p>
+  </header>
+
+  <!-- Pillars Overview Cards -->
+  <div class="pillars-grid">
+    <div class="pillar-card" style="--p-color: var(--green);">
+      <h3>📊 مؤشرات فاعلية المبيعات</h3>
+      <p>تقييم قدرة الفريق البيعي على تحويل الزوار إلى مشترين ورفع قيمة وحجم الفاتورة واستغلال المساحات.</p>
+    </div>
+    <div class="pillar-card" style="--p-color: var(--blue);">
+      <h3>📦 مؤشرات صحة المخزون</h3>
+      <p>تسريع معدل دوران البضائع، حماية هوامش الربح من الركود، والحد من العجز المخزوني (Shrinkage).</p>
+    </div>
+    <div class="pillar-card" style="--p-color: var(--purple);">
+      <h3>👥 مؤشرات ولاء العملاء</h3>
+      <p>قياس معدل استبقاء العملاء وتكرار الشراء ورضاهم الفوري لضمان النمو المستدام للفرع.</p>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav-wrapper">
+    <nav class="nav-bar">
+      <button class="nav-btn active" onclick="scrollToSec('salesSec', event)">📊 مؤشرات المبيعات</button>
+      <button class="nav-btn" onclick="scrollToSec('invSec', event)">📦 مؤشرات المخزون</button>
+      <button class="nav-btn" onclick="scrollToSec('custSec', event)">👥 مؤشرات العملاء</button>
+      <button class="nav-btn" onclick="scrollToSec('simSec', event)">🧮 المحاكي والحاسبة الشاملة</button>
+    </nav>
+  </div>
+
+  <main class="container">
+
+    <!-- 1. SALES KPIS SECTION -->
+    <section class="sec-block" id="salesSec">
+      <div class="sec-header">
+        <h2 class="sec-title">📊 المحور الأول: فاعلية المبيعات (Sales Performance)</h2>
+        <span class="sec-tag">5 KPIs</span>
+      </div>
+
+      <div class="kpi-grid">
+        <!-- CR -->
+        <div class="kpi-card" style="--accent-bar: var(--green);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Conversion Rate</span>
+              <span class="kpi-abbr">CR</span>
+            </div>
+            <div class="kpi-ar">معدل التحويل البيعي</div>
+            <p class="kpi-concept">يقيس نسبة الزوار الذين تحولوا إلى مشترين فعليين، ويعكس كفاءة الاستقبال والخدمة وتوافر المقاسات والموديلات المطلوبة.</p>
+            <div class="formula-box">CR = (Transactions ÷ Foot Traffic) × 100</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> 1,000 زائر أثمروا عن 250 عملية بيع = <strong>25%</strong>
+          </div>
+        </div>
+
+        <!-- ATV -->
+        <div class="kpi-card" style="--accent-bar: var(--green);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Average Transaction Value</span>
+              <span class="kpi-abbr">ATV</span>
+            </div>
+            <div class="kpi-ar">متوسط قيمة المعاملة</div>
+            <p class="kpi-concept">يقيس متوسط إنفاق العميل في الفاتورة الواحدة، ويوضح نجاح الفريق في البيع الإضافي (Upselling & Cross-selling).</p>
+            <div class="formula-box">ATV = Total Revenue ÷ Total Transactions</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> مبيعات $50,000 عبر 250 فاتورة = <strong>$200 / فاتورة</strong>
+          </div>
+        </div>
+
+        <!-- UPT -->
+        <div class="kpi-card" style="--accent-bar: var(--green);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Units Per Transaction</span>
+              <span class="kpi-abbr">UPT</span>
+            </div>
+            <div class="kpi-ar">عدد الوحدات لكل معاملة</div>
+            <p class="kpi-concept">يقيس متوسط عدد القطع في كل فاتورة، ويعكس مهارة البائع في اقتراح منتجات مكملة كالإكسسوارات أو العروض المجمعة.</p>
+            <div class="formula-box">UPT = Total Units Sold ÷ Total Transactions</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> بيع 750 قطعة عبر 250 فاتورة = <strong>3.0 قطع / فاتورة</strong>
+          </div>
+        </div>
+
+        <!-- SPLH -->
+        <div class="kpi-card" style="--accent-bar: var(--green);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Sales Per Labor Hour</span>
+              <span class="kpi-abbr">SPLH</span>
+            </div>
+            <div class="kpi-ar">المبيعات لكل ساعة عمل</div>
+            <p class="kpi-concept">يقيس إنتاجية الكادر البشري بمطابقة الإيراد بساعات الدوام الفعلية لضمان كفاءة توزيع جدول الشفتات خلال ساعات الذروة.</p>
+            <div class="formula-box">SPLH = Total Sales Revenue ÷ Total Labor Hours</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> مبيعات $50,000 على 200 ساعة عمل = <strong>$250 / ساعة</strong>
+          </div>
+        </div>
+
+        <!-- SPSF -->
+        <div class="kpi-card" style="--accent-bar: var(--green);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Sales Per Square Foot</span>
+              <span class="kpi-abbr">SPSF</span>
+            </div>
+            <div class="kpi-ar">المبيعات لكل قدم مربع</div>
+            <p class="kpi-concept">يقيس كفاءة استغلال المساحات البيعية داخل المتجر وتوزيع الستاندات ونقاط العرض البصري (Merchandising Layout).</p>
+            <div class="formula-box">SPSF = Total Sales Revenue ÷ Selling Sq. Footage</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> مبيعات $50,000 في مساحة 1,000 قدم² = <strong>$50 / قدم²</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. INVENTORY KPIS SECTION -->
+    <section class="sec-block" id="invSec">
+      <div class="sec-header">
+        <h2 class="sec-title">📦 المحور الثاني: صحة المخزون (Inventory Health)</h2>
+        <span class="sec-tag">4 KPIs</span>
+      </div>
+
+      <div class="kpi-grid">
+        <!-- ITR -->
+        <div class="kpi-card" style="--accent-bar: var(--blue);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Inventory Turnover Ratio</span>
+              <span class="kpi-abbr">ITR</span>
+            </div>
+            <div class="kpi-ar">معدل دوران المخزون</div>
+            <p class="kpi-concept">يقيس عدد مرات تصريف وتجديد البضاعة خلال الفترة، وارتفاعه الصحي يضمن تدفق السيولة وعدم تراكم الموديلات الراكدة.</p>
+            <div class="formula-box">ITR = COGS ÷ Average Inventory (at cost)</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> تكلفة مبيعات $300,000 ÷ متوسط مخزون $50,000 = <strong>6 دورات</strong>
+          </div>
+        </div>
+
+        <!-- GMROI -->
+        <div class="kpi-card" style="--accent-bar: var(--blue);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Gross Margin Return on Inv.</span>
+              <span class="kpi-abbr">GMROI</span>
+            </div>
+            <div class="kpi-ar">العائد على استثمار المخزون</div>
+            <p class="kpi-concept">يقيس مقدار مجمل الربح المحقق مقابل كل دولار مستثمر في تكلفة المخزون؛ يعتبر حجر الزاوية للمشتريات والتسعير.</p>
+            <div class="formula-box">GMROI = Gross Profit ÷ Average Inventory Cost</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> مجمل ربح $150,000 ÷ مخزون $50,000 = <strong>3.00</strong>
+          </div>
+        </div>
+
+        <!-- Accuracy -->
+        <div class="kpi-card" style="--accent-bar: var(--blue);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Inventory Accuracy Rate</span>
+              <span class="kpi-abbr">Accuracy</span>
+            </div>
+            <div class="kpi-ar">دقة بيانات الجرد</div>
+            <p class="kpi-concept">نسبة تطابق الأرصدة الفعلية في الرفوف والمخزن مع الأرصدة المسجلة على نظام الـ ERP لمنع حالات نفاد المقاسات فجأة.</p>
+            <div class="formula-box">Accuracy = (Matched Counts ÷ Total Checked) × 100</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> تطابق 490 صنفاً من أصل 500 مفحوص = <strong>98%</strong>
+          </div>
+        </div>
+
+        <!-- Shrinkage -->
+        <div class="kpi-card" style="--accent-bar: var(--blue);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Shrinkage Rate</span>
+              <span class="kpi-abbr">Shrinkage</span>
+            </div>
+            <div class="kpi-ar">معدل العجز والفاقد</div>
+            <p class="kpi-concept">يقيس نسبة الفقد الناتج عن السرقات أو التلف أو الأخطاء اللوجستية في تسجيل الفواتير والاستلامات مقارنة بالمخزون الدفتري.</p>
+            <div class="formula-box">Shrinkage = ((Book Inv - Actual Inv) ÷ Book Inv) × 100</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> عجز $1,500 من رصيد دفتري $100,000 = <strong>1.5%</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CUSTOMER KPIS SECTION -->
+    <section class="sec-block" id="custSec">
+      <div class="sec-header">
+        <h2 class="sec-title">👥 المحور الثالث: تجربة وولاء العملاء (Customer KPIs)</h2>
+        <span class="sec-tag">3 KPIs</span>
+      </div>
+
+      <div class="kpi-grid">
+        <!-- CRR -->
+        <div class="kpi-card" style="--accent-bar: var(--purple);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Customer Retention Rate</span>
+              <span class="kpi-abbr">CRR</span>
+            </div>
+            <div class="kpi-ar">معدل الاحتفاظ بالعملاء</div>
+            <p class="kpi-concept">يقيس نسبة العملاء الذين يستمرون في الشراء وتكرار الزيارة، فالعميل المخلص يقلل من تكاليف الاستقطاب ويزيد المبيعات.</p>
+            <div class="formula-box">CRR = ((End Cust - New Cust) ÷ Start Cust) × 100</div>
+          </div>
+          <div class="example-box">
+            <strong>مثال:</strong> ((1,100 نهاية - 300 جدد) ÷ 1,000 بداية) = <strong>80%</strong>
+          </div>
+        </div>
+
+        <!-- CSAT -->
+        <div class="kpi-card" style="--accent-bar: var(--purple);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Customer Satisfaction</span>
+              <span class="kpi-abbr">CSAT</span>
+            </div>
+            <div class="kpi-ar">مؤشر رضا العميل الفوري</div>
+            <p class="kpi-concept">تقييم لحظي وسريع لتجربة العميل في الفرع (عبر شاشات التقييم أو الاستبيان) لقياس جودة المعاملة وسرعة الكاشير.</p>
+            <div class="formula-box">CSAT = (Positive Ratings ÷ Total Responses) × 100</div>
+          </div>
+          <div class="example-box">
+            <strong>الهدف الموصى به:</strong> أعلى من <strong>85%</strong> تقييم إيجابي.
+          </div>
+        </div>
+
+        <!-- NPS -->
+        <div class="kpi-card" style="--accent-bar: var(--purple);">
+          <div>
+            <div class="kpi-top">
+              <span class="kpi-en">Net Promoter Score</span>
+              <span class="kpi-abbr">NPS</span>
+            </div>
+            <div class="kpi-ar">صافي نقاط الترويج والولاء</div>
+            <p class="kpi-concept">مقياس عالمي لاحتمالية ترشيح العميل للمتجر لأصدقائه على مقياس من 0 إلى 10 (المروجين 9-10 ناقص المعترضين 0-6).</p>
+            <div class="formula-box">NPS = % Promoters - % Detractors</div>
+          </div>
+          <div class="example-box">
+            <strong>النتيجة الإيجابية:</strong> أي رقم أعلى من <strong>+50</strong> يعتبر أداءً ممتازاً.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. INTERACTIVE SIMULATOR SECTION -->
+    <section class="calc-section" id="simSec">
+      <div class="calc-header">
+        <div>
+          <h2 style="font-size: 1.35rem; color:#fff; font-weight:800; margin-bottom:4px;">🧮 المحاكي التشغيلي وحاسبة المؤشرات</h2>
+          <p style="color:var(--muted); font-size:0.85rem;">غيّر قيم المدخلات أدناه لحساب كافة المؤشرات تلقائياً مع التفسير والتقييم الفوري</p>
+        </div>
+        <button onclick="resetDefaults()" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:#fff; padding:6px 14px; border-radius:6px; font-family:var(--ar); font-size:0.8rem; cursor:pointer;">استعادة أرقام المحاكاة</button>
+      </div>
+
+      <!-- Live Inputs -->
+      <div class="calc-inputs-grid">
+        <div class="input-field">
+          <label>صافي المبيعات Net Revenue ($)</label>
+          <input type="number" id="inpSales" value="500000" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>تكلفة البضاعة COGS ($)</label>
+          <input type="number" id="inpCogs" value="300000" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>عدد الزوار Foot Traffic</label>
+          <input type="number" id="inpTraffic" value="10000" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>عدد الفواتير Transactions</label>
+          <input type="number" id="inpTrx" value="2500" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>عدد القطع المباعة Units Sold</label>
+          <input type="number" id="inpUnits" value="7500" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>ساعات العمل Labor Hours</label>
+          <input type="number" id="inpHours" value="1250" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>المساحة البيعية (قدم مربع)</label>
+          <input type="number" id="inpArea" value="2500" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>متوسط تكلفة المخزون ($)</label>
+          <input type="number" id="inpAvgInv" value="60000" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>المخزون الدفتري Book Inv ($)</label>
+          <input type="number" id="inpBookInv" value="62000" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>المخزون الفعلي Actual Inv ($)</label>
+          <input type="number" id="inpActInv" value="60760" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>الأصناف المطابقة (من 500)</label>
+          <input type="number" id="inpMatchSkus" value="480" oninput="recalc()">
+        </div>
+        <div class="input-field">
+          <label>العملاء (بداية / نهاية / جدد)</label>
+          <div style="display:flex; gap:4px;">
+            <input type="number" id="inpCStart" value="4000" title="عملاء البداية" oninput="recalc()" style="width:33.3%;">
+            <input type="number" id="inpCEnd" value="4400" title="عملاء النهاية" oninput="recalc()" style="width:33.3%;">
+            <input type="number" id="inpCNew" value="800" title="العملاء الجدد" oninput="recalc()" style="width:33.3%;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Table -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>المؤشر (KPI)</th>
+              <th>المعادلة المطبقة</th>
+              <th>الناتج الفعلي</th>
+              <th>التقييم التشغيلي</th>
+              <th>التفسير والتوجيه الإداري</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Conversion Rate (CR)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">(Trx ÷ Traffic) × 100</td>
+              <td><span class="val-pill" id="outCR">25.0%</span></td>
+              <td><span class="eval-badge eval-good" id="badgeCR">ممتاز</span></td>
+              <td>ربع الزوار اشتروا؛ أداء عالي لطاقم صالة البيع وتوزيع سليم للموديلات.</td>
+            </tr>
+            <tr>
+              <td><strong>Average Transaction Value (ATV)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">Revenue ÷ Trx</td>
+              <td><span class="val-pill" id="outATV">$200.00</span></td>
+              <td><span class="eval-badge eval-good">صحي</span></td>
+              <td>متوسط سلة المشتريات للعميل؛ يدل على بيع قطع ذات قيمة متوازنة.</td>
+            </tr>
+            <tr>
+              <td><strong>Units Per Transaction (UPT)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">Units ÷ Trx</td>
+              <td><span class="val-pill" id="outUPT">3.00 Items</span></td>
+              <td><span class="eval-badge eval-good">قوي</span></td>
+              <td>معدل بيع القطع المكملة ممتاز؛ نجاح تقنيات البيع التقاطعي (Cross-selling).</td>
+            </tr>
+            <tr>
+              <td><strong>Sales Per Labor Hour (SPLH)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">Revenue ÷ Hours</td>
+              <td><span class="val-pill" id="outSPLH">$400.00 / hr</span></td>
+              <td><span class="eval-badge eval-good">إنتاجية عالية</span></td>
+              <td>توازن مثالي بين حجم المبيعات وساعات عمل الفريق وتغطية أوقات الذروة.</td>
+            </tr>
+            <tr>
+              <td><strong>Sales Per Sq. Foot (SPSF)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">Revenue ÷ Area</td>
+              <td><span class="val-pill" id="outSPSF">$200.00 / sq.ft</span></td>
+              <td><span class="eval-badge eval-good">استغلال مثالي</span></td>
+              <td>إنتاجية عالية لكل مساحة بيعية؛ كفاءة ممتازة في هندسة العرض البصري.</td>
+            </tr>
+            <tr>
+              <td><strong>Inventory Turnover (ITR)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">COGS ÷ Avg Inv</td>
+              <td><span class="val-pill" id="outITR">5.00 Turns</span></td>
+              <td><span class="eval-badge eval-good">سريع التدفق</span></td>
+              <td>دوران ممتاز يمنع تقادم البضاعة ويوفر سيولة نقدية مستمرة لدفعات جديدة.</td>
+            </tr>
+            <tr>
+              <td><strong>GMROI</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">Gross Profit ÷ Avg Inv</td>
+              <td><span class="val-pill" id="outGMROI">3.33</span></td>
+              <td><span class="eval-badge eval-good">ربحية ممتازة</span></td>
+              <td>كل $1 مستثمر في تكلفة المخزون يولد $3.33 مجمل ربح بالفرع.</td>
+            </tr>
+            <tr>
+              <td><strong>Inventory Accuracy</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">(Matches ÷ Total) × 100</td>
+              <td><span class="val-pill" id="outAcc">96.0%</span></td>
+              <td><span class="eval-badge eval-good">دقة عالية</span></td>
+              <td>تطابق جرد ممتاز يحمي من خيبة أمل العميل بفقدان مقاس مسجل بالسيستم.</td>
+            </tr>
+            <tr>
+              <td><strong>Shrinkage Rate</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">((Book - Act) ÷ Book) × 100</td>
+              <td><span class="val-pill" id="outShrink">2.00%</span></td>
+              <td><span class="eval-badge eval-warn" id="badgeShrink">يتطلب تدقيق</span></td>
+              <td>الفقد أعلى قليلاً من المعدل المستهدف (أقل من 1.6%)، يستوجب مراجعة الكاميرات والتوالف.</td>
+            </tr>
+            <tr>
+              <td><strong>Customer Retention (CRR)</strong></td>
+              <td style="font-family: var(--mono); font-size:0.8rem;">((End - New) ÷ Start) × 100</td>
+              <td><span class="val-pill" id="outCRR">90.0%</span></td>
+              <td><span class="eval-badge eval-good">ولاء استثنائي</span></td>
+              <td>قاعدة عملاء دائمة شديدة الولاء تقلل تكلفة الحملات الإعلانية الخارجية.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-title">RETAIL PERFORMANCE MANAGEMENT & KPI SUITE</div>
+    <p>دليل تشغيلي متكامل لمدراء الفروع ومسؤولي التجزئة · نسخة محاكاة مؤشرات الأداء</p>
+  </footer>
+
+  <script>
+    function scrollToSec(id, e) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      if(e && e.target) e.target.classList.add('active');
+    }
+
+    function recalc() {
+      const sales = parseFloat(document.getElementById('inpSales').value) || 0;
+      const cogs = parseFloat(document.getElementById('inpCogs').value) || 0;
+      const traffic = parseFloat(document.getElementById('inpTraffic').value) || 1;
+      const trx = parseFloat(document.getElementById('inpTrx').value) || 1;
+      const units = parseFloat(document.getElementById('inpUnits').value) || 0;
+      const hours = parseFloat(document.getElementById('inpHours').value) || 1;
+      const area = parseFloat(document.getElementById('inpArea').value) || 1;
+      const avgInv = parseFloat(document.getElementById('inpAvgInv').value) || 1;
+      const bookInv = parseFloat(document.getElementById('inpBookInv').value) || 1;
+      const actInv = parseFloat(document.getElementById('inpActInv').value) || 0;
+      const matchSkus = parseFloat(document.getElementById('inpMatchSkus').value) || 0;
+      const cStart = parseFloat(document.getElementById('inpCStart').value) || 1;
+      const cEnd = parseFloat(document.getElementById('inpCEnd').value) || 0;
+      const cNew = parseFloat(document.getElementById('inpCNew').value) || 0;
+
+      // Calculations
+      const cr = (trx / traffic) * 100;
+      const atv = sales / trx;
+      const upt = units / trx;
+      const splh = sales / hours;
+      const spsf = sales / area;
+      const itr = cogs / avgInv;
+      const gp = sales - cogs;
+      const gmroi = gp / avgInv;
+      const acc = (matchSkus / 500) * 100;
+      const shrink = ((bookInv - actInv) / bookInv) * 100;
+      const crr = ((cEnd - cNew) / cStart) * 100;
+
+      // Outputs
+      document.getElementById('outCR').innerText = cr.toFixed(1) + '%';
+      document.getElementById('outATV').innerText = '$' + atv.toFixed(2);
+      document.getElementById('outUPT').innerText = upt.toFixed(2) + ' Items';
+      document.getElementById('outSPLH').innerText = '$' + splh.toFixed(2) + ' / hr';
+      document.getElementById('outSPSF').innerText = '$' + spsf.toFixed(2) + ' / sq.ft';
+      document.getElementById('outITR').innerText = itr.toFixed(2) + ' Turns';
+      document.getElementById('outGMROI').innerText = gmroi.toFixed(2);
+      document.getElementById('outAcc').innerText = acc.toFixed(1) + '%';
+      document.getElementById('outShrink').innerText = shrink.toFixed(2) + '%';
+      document.getElementById('outCRR').innerText = crr.toFixed(1) + '%';
+
+      // Status Pills logic
+      const badgeShrink = document.getElementById('badgeShrink');
+      if (shrink <= 1.6) {
+        badgeShrink.className = 'eval-badge eval-good';
+        badgeShrink.innerText = 'ضمن المسموح';
+      } else {
+        badgeShrink.className = 'eval-badge eval-warn';
+        badgeShrink.innerText = 'يتطلب تدقيق';
+      }
+
+      const badgeCR = document.getElementById('badgeCR');
+      if (cr >= 20) {
+        badgeCR.className = 'eval-badge eval-good';
+        badgeCR.innerText = 'ممتاز';
+      } else {
+        badgeCR.className = 'eval-badge eval-warn';
+        badgeCR.innerText = 'يحتاج تفعيل';
+      }
+    }
+
+    function resetDefaults() {
+      document.getElementById('inpSales').value = 500000;
+      document.getElementById('inpCogs').value = 300000;
+      document.getElementById('inpTraffic').value = 10000;
+      document.getElementById('inpTrx').value = 2500;
+      document.getElementById('inpUnits').value = 7500;
+      document.getElementById('inpHours').value = 1250;
+      document.getElementById('inpArea').value = 2500;
+      document.getElementById('inpAvgInv').value = 60000;
+      document.getElementById('inpBookInv').value = 62000;
+      document.getElementById('inpActInv').value = 60760;
+      document.getElementById('inpMatchSkus').value = 480;
+      document.getElementById('inpCStart').value = 4000;
+      document.getElementById('inpCEnd').value = 4400;
+      document.getElementById('inpCNew').value = 800;
+      recalc();
+    }
+  </script>
+</body>
+</html>
